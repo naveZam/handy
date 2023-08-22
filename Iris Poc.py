@@ -53,10 +53,9 @@ def computeCost(X, y, theta):
     grad_J = np.zeros(theta.shape)
     h_theta = np.zeros(y.shape)
     J = np.zeros(3)
-
+    data = np.c_[np.ones((150, 1)), X]
     for i in range(len(theta)):
-        h_theta[i] = (calc_h_theta(X, theta[i][1:]))
-
+        h_theta[i] = (calc_h_theta(data, theta[i]))
 
     for k in range(len(J)):
         J[k] = np.sum(y[k] * np.log(h_theta[k]) + (1 - y[k]) * np.log(1 - h_theta[k]))   # Like for i in range(m)
@@ -73,28 +72,82 @@ def computeCost(X, y, theta):
     return J, grad_J
 
 
+def computeCostCircular(X, y, theta):
+    m = len(y)
+    grad_J = np.zeros(theta.shape)
+    J = np.zeros(3)
+    data = np.c_[np.ones((150, 1)), X]
+    h_theta = (calc_h_theta(data, theta.T))
+
+    J = np.sum(y * np.log(h_theta) + (1 - y) * np.log(1 - h_theta))   # Like for i in range(m)
+    for i in range(m):
+        for j in range(len(theta)):
+            if j < 2:
+                grad_J[2 - j] += (h_theta[i] - y[i]) * X[i][1 - j]
+            else:
+                grad_J[2 - j] += (h_theta[i] - y[i])
+
+
+    J = - 1 / m * J
+    grad_J = 1 / m * grad_J
+    return J, grad_J
+
+
 def train(X, y, theta):
     J_values = []
-    grad_J_values = []
-    for i in range(700):
+    for i in range(1500):
         J, grad_J = computeCost(X, y, theta)
         theta[0] = theta[0] - 0.01 * grad_J[0]
         theta[1] = theta[1] - 0.1 * grad_J[1]
         theta[2] = theta[2] - 0.1 * grad_J[2]
         J_values.append(J)
-        grad_J_values.append(grad_J[2][0])
     return theta, J_values
 
 
+def circular_data(data):
+    new_data = np.zeros((len(data), 5))
+    for i in range(len(data)):
+        new_data[i][0] = data[i][0]
+        new_data[i][1] = data[i][1]
+        new_data[i][2] = data[i][2]
+        new_data[i][3] = data[i][1] ** 2
+        new_data[i][4] = data[i][2] ** 2
+    return new_data
+
+
 def calculate_x2(x, theta):
-    return -((theta[0] + theta[1] * x)**0.5 / theta[2])
+    return -((theta[0] + theta[1] * x) / theta[2])
+
+
+def calculate_circular_x2(x, theta):
+    return theta[0] + theta[1] * x[0] + theta[2] * x[1] + theta[3] * x[0] ** 2 + theta[4] * x[1] ** 2
+
+
+def test_train(X, y, theta):
+    J_values = []
+    for i in range(1000):
+        J, grad_J = computeCostCircular(X, y, theta)
+        theta = theta - 0.01 * grad_J
+        J_values.append(J)
+    return theta, J_values
 
 
 def main():
     X, y = create_data_plot()
     theta_values = np.zeros((3, 3))
+    theta_versicolor = np.ones((5, 1))
+    data = circular_data(np.c_[y, X])
+    data = np.c_[np.ones((150, 1)), np.delete(data, 0, axis=1)]
+
+    h_theta = calc_h_theta(data, theta_versicolor.T)
+    print(h_theta.T)
 
     y_types = binary_to_types(y)
+
+    print(y_types[1])
+    print(computeCostCircular(np.delete(data, 0, axis=1), y_types[1], theta_versicolor))
+    theta_versicolor, J_values_test = test_train(np.delete(data, 0, axis=1), y_types[1], theta_versicolor)
+    print(theta_versicolor)
 
     #print(X, y_types[0], theta_values[0], np.c_[X, y_types[0]])
 
@@ -117,6 +170,20 @@ def main():
     ys = J_values
     xs = [x for x in range(len(J_values))]
     plt.plot(xs, ys)
+    plt.show()
+
+
+    ys = J_values_test
+    xs = [x for x in range(len(J_values_test))]
+    plt.plot(xs, ys)
+    plt.show()
+
+
+    x = np.linspace(0, 7, 100)
+    y = np.linspace(0, 7, 100)
+    X, Y = np.meshgrid(x, y)
+
+    plt.contour(X, Y, calculate_circular_x2([X, Y], theta_versicolor), [0])
     plt.show()
 
 
