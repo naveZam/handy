@@ -13,31 +13,34 @@ def gradiant_decent(weight, arrX, arrY):
     for i in range(n):
         x = arrX[i]
         y = arrY[i]
-        gWeight[2] += -(2 / n) * x[1] ** 2 * (y - (weight[0] + weight[1] * x[1] + weight[2] * x[2]))
-        gWeight[1] += -(2/n) * x[1] * (y - (weight[0] + weight[1] * x[1] + weight[2] * x[2]))
-        gWeight[0] += -(2 / n) * (y - (weight[0] + weight[1] * x[1] + weight[2] * x[2]))
-    newWeight = [weight[0], weight[1], weight[2]]
+        gWeight[2] += x[2]* (y - (weight[0] + weight[1] * x[1] + weight[2] * x[2]))
+        gWeight[1] +=  x[1] * (y - (weight[0] + weight[1] * x[1] + weight[2] * x[2]))
+        gWeight[0] += (y - (weight[0] + weight[1] * x[1] + weight[2] * x[2]))
+    gWeight[0] *= -(2/n)
+    gWeight[1] *= -(2/n)
+    gWeight[2] *= -(2/n)
+    newWeight = weight
     newWeight[0] = newWeight[0] - gWeight[0] * 0.001
     newWeight[1] = newWeight[1] - gWeight[1] * 0.001
-    newWeight[1] = newWeight[1] - gWeight[1] * 0.001
+    newWeight[2] = newWeight[2] - gWeight[2] * 0.001
 
     return newWeight
 
 
-"""def cost(weight, bias, data, y):
+def cost(weight,data, y):
     cost = 0
     i = 0
     for a in data:
-        cost += (y[i] - (a * weight + bias)) ** 2
+        cost += (y[i] - (weight[0] + weight[1] * a[1] + weight[2] * a[2])) ** 2
         i += 1
-    return cost"""
+    return cost
 
 costs = []
 weight = [0, 0, 0]
 bias = 0
 epochs = 30
-x = np.load('TA_Xhouses.npy')
-y = np.load('TA_yprice.npy')
+x = np.load("C:\\Users\\test0\\Downloads\\TA_Xhouses.npy")
+y = np.load("C:\\Users\\test0\\Downloads\\TA_yprice.npy")
 
 poly = PolynomialFeatures(degree=2)
 xpoly = poly.fit_transform(x)
@@ -59,14 +62,14 @@ for i in range(epochs):
     for num in numbers:
         batchY.append(y[num])
         batchX.append(x[num])
-    weight = gradiant_decent(weight, new_x, batchY)
-
+    costs.append(cost(weight, new_x, y))
+    weight = gradiant_decent(weight, new_x, y)
+print(costs)
 plt.scatter(x, y)
 plt.plot(xfit, yfit)
 plt.show()
 
 plt.clf()
 plt.scatter(x, y)
-plt.plot(list(range(14, 22)), [weight[0] + weight[1] * x + weight[2] * x ** 2 for x in range(4, 12)])
+plt.plot(list(range(4, 12)), [weight[0] + weight[1] * i + weight[2] * i ** 2 for i in range(4, 12)])
 plt.show()
-
