@@ -16,15 +16,14 @@ def gradiant_decent(weight, arrX, arrY):
         gWeight[2] += -(2/n)* x[2] * singleCost(weight, x, y)
         gWeight[1] += -(2/n) * x[1] * singleCost(weight, x, y)
         gWeight[0] += -(2/n) * singleCost(weight, x, y)
-    newWeight = weight
-    newWeight = updateWeights(newWeight, gWeight, 0.001)
-
+    newWeight = updateWeights(weight, gWeight, 0.001)
     return newWeight
-def updateWeights(newWeight, gWeight, learningRate)
-{
-    for i in len(newWeight):
-        newWeight[i] = newWeight[i] - gWeight[i] * 0.001
-}
+
+def updateWeights(newWeight, gWeight, learningRate):
+    for i in range(len(newWeight)):
+        newWeight[i] = newWeight[i] - gWeight[i] * learningRate
+    return newWeight
+
 def singleCost(weight, x, y):
     return (y - (weight[0] + weight[1] * x[1] + weight[2] * x[2]))
 
@@ -55,8 +54,9 @@ yfit = model.predict(xfitPoly)
 
 new_x = []
 for num in x:
-    new_x.append([1, num, num **2])
+    new_x.append([1, num[0], num[0] **2])
 for i in range(epochs):
+    print(weight)
     weight = gradiant_decent(weight, new_x, y)
     
 plt.scatter(x, y)
