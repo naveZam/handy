@@ -42,8 +42,8 @@ costs = []
 weight = np.ones(3)
 bias = 0
 epochs = 30
-x = np.load("C:\\Users\\orile\\Downloads\\Exercise 1 data-20230826\\TA_Xhouses.npy")
-y = np.load("C:\\Users\\orile\\Downloads\\Exercise 1 data-20230826\\TA_yprice.npy")
+x = np.load("Exercise 1 data-20230826\\TA_Xhouses.npy")
+y = np.load("Exercise 1 data-20230826\\TA_yprice.npy")
 
 #SkLearn
 poly = PolynomialFeatures(degree=2)
