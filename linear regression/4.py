@@ -4,18 +4,21 @@ import seaborn as sns;sns.set()
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import random
-
+DEGREE = 2
 
 
 def gradiant_decent(weight, arrX, arrY):
-    gWeight = [0, 0, 0]
+    gWeight = np.zeros(DEGREE + 1)
+    print(gWeight)
     n = len(arrY)
     for i in range(n):
         x = arrX[i]
         y = arrY[i]
-        gWeight[2] += -(2/n)* x[2] * singleCost(weight, x, y)
-        gWeight[1] += -(2/n) * x[1] * singleCost(weight, x, y)
-        gWeight[0] += -(2/n) * singleCost(weight, x, y)
+        
+        gWeight[2] += x[2] * (y - np.dot(x, weight))
+        gWeight[1] += x[1] * (y - np.dot(x, weight))
+        gWeight[0] += (y - np.dot(x, weight))
+    gWeight *= -(2/n)
     newWeight = updateWeights(weight, gWeight, 0.001)
     return newWeight
 
@@ -31,16 +34,16 @@ def cost(weight,data, y):
     cost = 0
     i = 0
     for a in data:
-        cost+=  singleCost(weight, data, y[i]) ** 2
+        cost+=  weight @ x ** 2
         i += 1
     return cost
 
 costs = []
-weight = [0, 0, 0]
+weight = np.ones(3)
 bias = 0
 epochs = 30
-x = np.load("Exercise 1 data-20230826\\TA_Xhouses.npy")
-y = np.load("Exercise 1 data-20230826\\TA_yprice.npy")
+x = np.load("C:\\Users\\orile\\Downloads\\Exercise 1 data-20230826\\TA_Xhouses.npy")
+y = np.load("C:\\Users\\orile\\Downloads\\Exercise 1 data-20230826\\TA_yprice.npy")
 
 #SkLearn
 poly = PolynomialFeatures(degree=2)
@@ -51,10 +54,15 @@ xfit = np.linspace(0,15, 100)[:, np.newaxis]
 xfitPoly = PolynomialFeatures.transform(poly, xfit)
 yfit = model.predict(xfitPoly)
 #SkLearn
-
+i = 0
 new_x = []
 for num in x:
-    new_x.append([1, num[0], num[0] **2])
+    
+    new_x.append([np.float64(1)])
+    for j in range(DEGREE):
+        new_x[i].append(num ** (j +1))
+    i += 1
+print(new_x)
 for i in range(epochs):
     print(weight)
     weight = gradiant_decent(weight, new_x, y)
