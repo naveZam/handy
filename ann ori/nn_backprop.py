@@ -126,12 +126,8 @@ def backprop(weights, numOfLayers, X, y, max_iter = 1000, alpha = 0.9, Lambda = 
     [J,Theta1,Theta2] = backprop(Theta1, Theta2, X,y,max_iter, alpha,Lambda)
     """
     
-    m = X.shape[0]
-    num_outputs = weights[0].shape[1]
-    delta3 = np.zeros((num_outputs, 1))
+    num_of_training_examples = X.shape[0]
     deltas = [np.zeros_like(w) for w in weights]
-    ybin = np.zeros(delta3.shape)
-    p = np.zeros((m,1))
     J = 0
     weightsGrad = []
     weightsDer = []
@@ -143,9 +139,9 @@ def backprop(weights, numOfLayers, X, y, max_iter = 1000, alpha = 0.9, Lambda = 
         for i in range(numOfLayers):
             weightsGrad[i] = np.zeros(weights[i].shape)
             weightsDer[i] = np.zeros(weights[i].shape)
-        r = np.random.permutation(m)
+        r = np.random.permutation(num_of_training_examples)
         
-        for k in range(m):
+        for k in range(num_of_training_examples):
             X1 = X[r[k],:]
             X1 = X1.reshape(1, X1.shape[0])
             ### Forward propagation
@@ -166,7 +162,7 @@ def backprop(weights, numOfLayers, X, y, max_iter = 1000, alpha = 0.9, Lambda = 
                 ybin = np.zeros(a[-1].shape)
                 ybin[y[r[k]]] = 1  # Assigning 1 to the binary digit according to
                 # the class (label) of the input
-                J += 1 / m * (-1) * (np.dot(ybin.T, np.log(a[-1])) + np.dot((1 - ybin).T, np.log(1 - a[-1])))
+                J += 1 / num_of_training_examples * (-1) * (np.dot(ybin.T, np.log(a[-1])) + np.dot((1 - ybin).T, np.log(1 - a[-1])))
                 deltas[-1] = (a[-1] - ybin)
 
                 g_tag = a[i] * (1 - a[i])
@@ -178,13 +174,13 @@ def backprop(weights, numOfLayers, X, y, max_iter = 1000, alpha = 0.9, Lambda = 
                 weightsGrad[i] += np.dot(deltas[i], a[i])
 
 
-                weightsDer[i] = 1 / m * weightsGrad[i]
-                weightsDer[i][1:, :] += Lambda / m * weights[i][1:, :]
+                weightsDer[i] = 1 / num_of_training_examples * weightsGrad[i]
+                weightsDer[i][1:, :] += Lambda / num_of_training_examples * weights[i][1:, :]
 
                 #### Updating the parameters
                 weights[i] = weights[i] - alpha * weightsDer[i]
 
-                J += (Lambda / (2 * m)) * np.sum(weights[i] ** 2)
+                J += (Lambda / (2 * num_of_training_examples)) * np.sum(weights[i] ** 2)
 
             if np.mod(q, 2) == 0:
                 print('Cost function J = ', J, 'in iteration',
@@ -229,14 +225,14 @@ y = y.reshape((y.shape[0], 1))
 
 
 L1 = X.shape[1]
-num_hidden = 16
-num_outputs = np.unique(y).size
+num_of_units_on_hidden_layers = 16
+num_output_units = np.unique(y).size
 numOfLayers = int(input())
 weights = []
-weights.append(init_parameters(L1, num_hidden))
+weights.append(init_parameters(L1, num_of_units_on_hidden_layers))
 for i in range(1, numOfLayers-1):
-    weights.append(init_parameters(num_hidden, num_hidden))
-weights.append(init_parameters(num_hidden, num_outputs))
+    weights.append(init_parameters(num_of_units_on_hidden_layers, num_of_units_on_hidden_layers))
+weights.append(init_parameters(num_of_units_on_hidden_layers, num_output_units))
 
 J,weights = backprop(weights, numOfLayers,  X, y, 120, 0.9, 0.01 )
 
