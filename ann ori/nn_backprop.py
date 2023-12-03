@@ -103,7 +103,7 @@ def ff_predict(weights, X, y):
     
 
 
-def backprop(weights, numOfLayers, X, y, max_iter = 1000, alpha = 0.9, Lambda = 0):
+def backprop(weights, numOfLayers, X, y, max_iter = 1000, learningRate = 0.9, Lambda = 0):
     """
     backprop - BackPropagation for training a neural network
     Input arguments
@@ -116,79 +116,83 @@ def backprop(weights, numOfLayers, X, y, max_iter = 1000, alpha = 0.9, Lambda = 
     Lambda - regularization coefficient.
     
     Output arguments
-    J - the cost function
+    cost - the cost function
     Theta1 - updated weight matrix between the input and the first 
         hidden layer
     Theta2 - updated weight matrix between the hidden layer and the output 
         layer (or a second hidden layer)
     
     Usage:
-    [J,Theta1,Theta2] = backprop(Theta1, Theta2, X,y,max_iter, alpha,Lambda)
+    [cost,Theta1,Theta2] = backprop(Theta1, Theta2, X,y,max_iter, alpha,Lambda)
     """
     
     num_of_training_examples = X.shape[0]
     deltas = [np.zeros_like(w) for w in weights]
-    J = 0
+    cost = 0
     weightsGrad = []
     weightsDer = []
     for i in range(numOfLayers):
         weightsGrad.append(np.zeros(weights[i].shape))
         weightsDer.append(np.zeros(weights[i].shape))
-    for q in range(max_iter):
-        J = 0
+    for iter in range(max_iter):
+        cost = 0
         for i in range(numOfLayers):
+
             weightsGrad[i] = np.zeros(weights[i].shape)
             weightsDer[i] = np.zeros(weights[i].shape)
         r = np.random.permutation(num_of_training_examples)
         
         for k in range(num_of_training_examples):
-            X1 = X[r[k],:]
-            X1 = X1.reshape(1, X1.shape[0])
+            trainingExample = X[r[k],:]
+            trainingExample = trainingExample.reshape(1, trainingExample.shape[0])
             ### Forward propagation
-            X1_0 = np.ones((X1.shape[0], 1))
-            X1 = np.concatenate((X1_0, X1), axis=1)
-            X1 = X1.T
-            a = [X1]
+            bias = np.ones((trainingExample.shape[0], 1))
+            trainingExample = np.concatenate((bias, trainingExample), axis=1)
+            trainingExample = trainingExample.T
+            a = [trainingExample]
             for i in range(numOfLayers):
-                if(i == 1):
-                    a0 = np.ones((a.shape[0]), 1)
-                    a = np.concatenate((a0, a), axis=0)
-
-
-                z = np.dot(weights[i], a[i])
+                print(i)
+                if(i == 0):
+                    z = np.dot(weights[i], a[i]).T
+                elif i == 1:
+                    z = np.dot(weights[i].T, a[i].T).T
+                else:
+                    z = np.dot(weights[i], a[i].T).T
                 a.append(sigmoid(z))
 
                 ### Backward propagation
                 ybin = np.zeros(a[-1].shape)
-                ybin[y[r[k]]] = 1  # Assigning 1 to the binary digit according to
+                ybin[k][y[r[k]]] = 1  # Assigning 1 to the binary digit according to
                 # the class (label) of the input
-                J += 1 / num_of_training_examples * (-1) * (np.dot(ybin.T, np.log(a[-1])) + np.dot((1 - ybin).T, np.log(1 - a[-1])))
-                deltas[-1] = (a[-1] - ybin)
+                #cost += 1 / num_of_training_examples * (-1) * (np.dot(ybin.T, np.log(a[-1])) + np.dot((1 - ybin).T, np.log(1 - a[-1])))
+                #deltas[-1] = (a[-1] - ybin)
 
                 g_tag = a[i] * (1 - a[i])
-                deltas[i] = np.dot(weights[i][:, 1:].T, deltas[i]) * g_tag[1:]
-                print(weightsGrad[i].shape)
-                print(deltas[i].shape)
-                print(a[i].shape)
+                #deltas[i] = np.dot(weights[i][:, 1:].T, deltas[i]) * g_tag[1:]
+                if (i == 0):
+                    weightsGrad[i] += np.dot(deltas[i], a[i])
+                elif i == 1:
+                    weightsGrad[i] += np.dot(deltas[i].T, a[i].T).T
+                else:
+                    weightsGrad[i] += np.dot(deltas[i], a[i].T)
 
-                weightsGrad[i] += np.dot(deltas[i], a[i])
 
 
                 weightsDer[i] = 1 / num_of_training_examples * weightsGrad[i]
                 weightsDer[i][1:, :] += Lambda / num_of_training_examples * weights[i][1:, :]
 
                 #### Updating the parameters
-                weights[i] = weights[i] - alpha * weightsDer[i]
+                weights[i] = weights[i] - learningRate * weightsDer[i]
 
-                J += (Lambda / (2 * num_of_training_examples)) * np.sum(weights[i] ** 2)
+                cost += (Lambda / (2 * num_of_training_examples)) * np.sum(weights[i] ** 2)
 
-            if np.mod(q, 2) == 0:
-                print('Cost function J = ', J, 'in iteration',
-                      q, 'with Lambda = ', Lambda)
+            if np.mod(iter, 2) == 0:
+                print('Cost function cost = ', cost, 'in iteration',
+                      iter, 'with Lambda = ', Lambda)
                 p, acc = ff_predict(weights, X, y)
                 print('Net accuracy for training set = ', acc)
 
-    return J, weights
+    return cost, weights
 
 
 from keras.datasets import mnist
