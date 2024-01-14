@@ -1,0 +1,12 @@
+{
+    "commands":[
+        {
+            "id":0,
+            "command":"click"
+        },
+        {
+            "id":1,
+            "command":"move,100,100"
+        }
+    ]
+}
