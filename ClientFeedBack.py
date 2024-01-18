@@ -3,7 +3,7 @@ import os
 import zipfile
 import pickle
 HOST = "127.0.0.1"
-PORT = 65432  
+PORT = 5542  
 MODEL_NAME = "model"
 def sendFeedBack(images, correctID):
 
@@ -20,7 +20,7 @@ def requestUpdate():
     s.connect((HOST, PORT))
     s.sendall("requestUpdate".encode())
     zip_size = int(s.recv(1024))
-    f = open(MODEL_NAME, "wb")
+    f = open(MODEL_NAME+".zip", "wb")
     f.write(s.recv(zip_size))
     f.close()
     s.close()
