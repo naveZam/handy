@@ -24,7 +24,12 @@ def receiveFeedBack(c):
 def trainModel():
     if len(feedbacks) > 10:
         print("training model")
+
      
+
+
+with open('feedbackData.pickle', 'rb') as handle:
+    feedbacks = pickle.loads(handle.read())
 s = socket.socket()
 trainingThread = threading.Thread(trainModel)
 trainingThread.start()

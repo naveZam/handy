@@ -6,7 +6,6 @@ HOST = "127.0.0.1"
 PORT = 5542  
 MODEL_NAME = "model"
 def sendFeedBack(images, correctID):
-
     data = [images, correctID]
     data = pickle.dumps(data)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
