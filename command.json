@@ -2,11 +2,15 @@
     "commands":[
         {
             "id":0,
-            "command":"click"
+            "command":"location"
         },
         {
             "id":1,
             "command":"move,100,100"
+        },
+	{
+            "id":2,
+            "command":"wait,1;click"
         }
     ]
 }

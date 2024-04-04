@@ -1,9 +1,10 @@
 import sys
+import PyQt5
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QApplication
 from PyQt5.QtGui import QPixmap, QImage
 from camera import *
-
 class ImageWindow(QMainWindow):
+    
     def __init__(self):
         super().__init__()
         self.image_label = QLabel()
@@ -19,7 +20,6 @@ class ImageWindow(QMainWindow):
 
         # Connect the resize event to update the image
         self.resizeEvent = self.update_image_size
-
     def update_image(self, image_array):
         """Updates the displayed image using a NumPy array.
 
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     window = ImageWindow()
     window.show()
     while True:
-        id = input_to_model(calc_sleep(get_fps(), get_fps()-1),window)  
+        id = input_to_model(calc_sleep(get_fps(), get_fps()-1),window.update_image)
+        print(1)  
         sys.exit(app.exec_())
     

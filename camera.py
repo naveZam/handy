@@ -11,9 +11,7 @@ import keras
 from keras import layers
 from ComputerControl import *
 import sys
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QApplication
 import pickle
-import gui
 MAX_IMAGES_SAVED = 10
 currentId = 0
 
@@ -50,7 +48,7 @@ def get_pictures(sleep_time, window):
         
         # Add it to the array
         images[i] = cv2.cvtColor(frame_numpy, cv2.COLOR_BGR2RGB)
-        window.update_image(images[i])
+        window(images[i])
         
     
     # After the loop release the cap object

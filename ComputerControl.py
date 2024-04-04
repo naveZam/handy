@@ -20,9 +20,9 @@ def execute_command(command):
         time.sleep(0.5)
 
 def id_to_command(id):
-    f = open(r"C:\Users\orile\hand-recognition\command.json",)
+    f = open(r"C:\Users\orile\Repos\hand-recognition\command.json",'r')
     commands = json.load(f)
     for i in commands["commands"]:
         if i["id"] == id:
-            return i["command"]
+            execute_command(i["command"])
 
