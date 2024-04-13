@@ -19,9 +19,11 @@ currentId = 0
 
 def recognise_hand(images):
     images = images.reshape(1,37, 100, 176, 3)
-    model = tf.keras.models.load_model("Test_save_model")
-    print(np.argmax(model.predict(images)[0]))
-    return np.argmax(model.predict(images)[0])
+    model = tf.keras.models.load_model(r"C:\Users\orile\Repos\hand-recognition\model7_3")
+    id = np.argmax(model.predict(images, verbose=0)[0])
+    print(id)
+    execute_command(id_to_command(id))
+    #return np.argmax(id)
     
 ## Helper functions
 
