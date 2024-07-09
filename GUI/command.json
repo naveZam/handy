@@ -1,0 +1,33 @@
+{
+    "commands":[
+	{
+            "id":0,
+            "command":"wait,1;type,STOP THIS MOMENT;press,enter"
+        },
+        {
+            "id":1,
+            "command":"type,nice"
+        },
+        {
+            "id":2,
+            "command":"click"
+        },
+        {
+            "id":3,
+            "command":"send,+972524286406,can you please make me toasts?"
+        },
+	{
+            "id":4,
+            "command":"none"
+        },
+	{
+            "id":5,
+            "command":"none"
+        },
+	{
+            "id":6,
+            "command":"none"
+        }
+	
+    ]
+}
